@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @Service
-public class RegisterService {
+public class ApiRegisterService {
 
     @Autowired
     ObjectMapper mapper;
@@ -20,23 +20,24 @@ public class RegisterService {
 
     public JsonNode loadJson(String fileName){
 
-
-        JsonNode test = getExampleRoot();
-
+        JsonNode test = getExampleRoot(fileName);
         return test;
     }
 
-
+    public JsonNode loadExampleJson(String fileName){
+        JsonNode test = getPushSettingExampleRoot();
+        return test;
+    }
     public ResponseEntity<ObjectNode> registerApi(String url, ObjectNode requestBody){
 
         return (ResponseEntity<ObjectNode>) ResponseEntity.ok();
     }
 
 
-    JsonNode getExampleRoot() {
+    JsonNode getExampleRoot(String fileName) {
         InputStream exampleInput =
                 TempTestController.class.getClassLoader()
-                        .getResourceAsStream("api_setting/push_setting_response.json");
+                        .getResourceAsStream(fileName);
 
         JsonNode rootNode = null;
         try {
@@ -45,6 +46,11 @@ public class RegisterService {
             e.printStackTrace();
         }
         return rootNode;
+    }
+
+
+    JsonNode getPushSettingExampleRoot() {
+        return getExampleRoot("api_setting/push_setting_response.json");
     }
 }
 

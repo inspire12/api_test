@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.inspire12.api_test.service.ApiCompareService;
-import com.inspire12.api_test.service.RegisterService;
+import com.inspire12.api_test.service.ApiRegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +18,7 @@ public class TempTestController {
     ApiCompareService apiCompareService;
 
     @Autowired
-    RegisterService registerService;
+    ApiRegisterService apiRegisterService;
 
     @GetMapping(value = "/test")
     public ObjectNode checkApi(){
@@ -28,18 +28,12 @@ public class TempTestController {
         ObjectNode t = obj(test);
         JsonParser jsonParser = t.traverse();
 
-        JsonNode expectedResponse = registerService.loadJson("");
+        JsonNode expectedResponse = apiRegisterService.loadExampleJson("");
 
-        try{
-
-        }catch (Exception e){
-            return objectMapper.createObjectNode();
-        }
+//        apiCompareService.compare(expectedResponse);
 
         return test;
 
-//        String a = new String("vasdf");
-//        a.getClass().getSimpleName();
     }
 
     private ObjectNode obj(ObjectNode t ){

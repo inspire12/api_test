@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import sun.reflect.annotation.ExceptionProxy;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -16,13 +17,13 @@ public class ApiRunService {
     RestTemplate restTemplate;
 
 
-    public ObjectNode run(String api, String requestType, HttpHeaders headers) {
+    public ObjectNode run(String api, String requestType, HttpHeaders headers) throws Exception {
         ResponseEntity<ObjectNode> response;
         if (requestType.equals("get")) {
 //            response = restTemplate.exchange(api, , ObjectNode.class, headers);
             response = restTemplate.exchange(api, HttpMethod.GET, new HttpEntity<>(headers), ObjectNode.class);
         } else {
-            response = null;
+            throw new Exception();
         }
 
         return response.getBody();
@@ -32,7 +33,6 @@ public class ApiRunService {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(new MediaType[]{MediaType.APPLICATION_JSON}));
         headers.setContentType(MediaType.APPLICATION_JSON);
-
         return headers;
     }
 }
