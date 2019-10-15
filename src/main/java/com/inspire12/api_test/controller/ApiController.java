@@ -28,18 +28,36 @@ public class ApiController {
     @Autowired
     ApiRunService apiRunService;
 
-    @Autowired
-    ApiRegisterService apiRegisterService;
-
-    @PostMapping("/")
+    @GetMapping("/compare")
     public boolean run(@RequestBody ObjectNode request) throws Exception {
         String url = request.get("url").asText();
+        String name = request.get("name").asText();
         String requestType = request.get("type").asText();
+
         HttpHeaders headers = convertHeaders((ObjectNode) request.get("headers"));
         ObjectNode runResponse = apiRunService.run(url, requestType, headers);
-        return apiCompareService.compare(runResponse, (ObjectNode) apiRegisterService.loadJson(url));
+        return apiCompareService.compare(runResponse, CompareJsonField.loadJsonFromFile(makeFilePath(name)));
     }
 
+
+
+    @PostMapping("/register")
+    public ObjectNode addValue(@RequestBody TestRequestFormat requestFormat) throws IOException {
+        final String filePath = makeFilePath(requestFormat.getName());
+        File file = new File(filePath);
+        if (file.exists()){
+            throw new DuplicatedRegisterException();
+        }
+        try (FileWriter output = new FileWriter(file)) {
+            System.out.println(requestFormat.toString());
+            output.write(requestFormat.toString());
+        }
+        return requestFormat.getResponseFormat();
+    }
+
+    private String makeFilePath(String path) {
+        return "sample/" + path + ".json";
+    }
 
     private HttpHeaders convertHeaders(ObjectNode objectNode) {
         Iterator<String> fieldNames = objectNode.fieldNames();
@@ -54,20 +72,4 @@ public class ApiController {
         return headers;
     }
 
-
-    @PostMapping("/add")
-    public ObjectNode addValue(@RequestBody TestRequestFormat requestFormat) throws IOException {
-        final String filePath = makeFilePath(requestFormat.getName() + ".json");
-        File file = new File(filePath);
-
-        try (FileWriter output = new FileWriter(file)) {
-            System.out.println(requestFormat.toString());
-            output.write(requestFormat.toString());
-        }
-        return requestFormat.getResponseFormat();
-    }
-
-    private String makeFilePath(String path) {
-        return "sample/" + path;
-    }
 }

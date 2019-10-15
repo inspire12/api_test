@@ -16,7 +16,7 @@ public class ApiCompareService {
 
     Logger logger = LoggerFactory.getLogger(ApiCompareService.class);
 
-    public boolean compare(ObjectNode response, ObjectNode savedResponse) {
+    public boolean compare(JsonNode response, JsonNode savedResponse) {
 
         return CompareJsonField.isFieldTypeCompare(response, savedResponse);
     }

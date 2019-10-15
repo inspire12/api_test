@@ -21,4 +21,8 @@ public abstract class AppException extends RuntimeException{
         this.errorMessage = errorMessage;
         this.httpStatus = httpStatus;
     }
+
+    public AppException() {
+        this.errorCode = errorCode;
+    }
 }
