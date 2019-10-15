@@ -1,13 +1,16 @@
 package com.inspire12.api_test.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.inspire12.api_test.exception.DuplicatedRegisterException;
+import com.inspire12.api_test.model.CompareJsonField;
 import com.inspire12.api_test.model.TestRequestFormat;
 import com.inspire12.api_test.service.ApiCompareService;
 import com.inspire12.api_test.service.ApiRunService;
-import com.inspire12.api_test.service.ApiRegisterService;
+import com.inspire12.api_test.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
