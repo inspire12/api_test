@@ -2,14 +2,20 @@ package com.inspire12.api_test.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.tomcat.util.json.JSONParser;
+import org.apache.tomcat.util.json.ParseException;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
-public class CompareJsonField {
+public class ComparatorJsonField {
     private static ObjectMapper mapper;
 
-    private CompareJsonField() {
+    private ComparatorJsonField() {
         mapper = new ObjectMapper();
     }
 
@@ -31,15 +37,22 @@ public class CompareJsonField {
         return true;
     }
 
-
+//    public static JsonNode loadJsonFromFile(String fileName) throws ParseException {
+//        JSONParser parser = new JSONParser(fileName);
+//        return (JsonNode)parser.parse();
+//    }
     public static JsonNode loadJsonFromFile(String fileName) {
-        InputStream exampleInput =
-                CompareJsonField.class.getClassLoader()
-                        .getResourceAsStream(fileName);
+//        InputStream exampleInput =
+//                ComparatorJsonField.class.getClassLoader().getResourceAsStream(fileName);
 
         JsonNode rootNode = null;
         try {
-            rootNode = mapper.readTree(exampleInput);
+            File file = new File(fileName);
+            if (file.exists()) {
+                rootNode = mapper.readTree(file);
+            }
+        } catch (NullPointerException e){
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

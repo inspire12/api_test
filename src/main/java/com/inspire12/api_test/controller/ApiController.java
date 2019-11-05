@@ -1,12 +1,13 @@
 package com.inspire12.api_test.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.inspire12.api_test.exception.DuplicatedRegisterException;
-import com.inspire12.api_test.model.CompareJsonField;
+import com.inspire12.api_test.model.ComparatorJsonField;
+import com.inspire12.api_test.model.ComparatorRequest;
 import com.inspire12.api_test.model.TestRequestFormat;
 import com.inspire12.api_test.service.ApiCompareService;
 import com.inspire12.api_test.service.ApiRunService;
-import com.inspire12.api_test.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.*;
 import java.util.Iterator;
 
+
+
 @RestController
 public class ApiController {
 
@@ -28,16 +31,17 @@ public class ApiController {
     @Autowired
     ApiRunService apiRunService;
 
-    @GetMapping("/compare")
-    public boolean run(@RequestBody ObjectNode request) throws Exception {
-        String url = request.get("url").asText();
-        String name = request.get("name").asText();
-        String requestType = request.get("type").asText();
-
-        HttpHeaders headers = convertHeaders((ObjectNode) request.get("headers"));
-        ObjectNode runResponse = apiRunService.run(url, requestType, headers);
-        return apiCompareService.compare(runResponse, CompareJsonField.loadJsonFromFile(makeFilePath(name)));
+    @GetMapping("/instant/compare")
+    public boolean runInstantComapre(@RequestBody ComparatorRequest request) throws Exception {
+        String url = request.getUrl();
+        String name = request.getName();
+        String requestType = request.getRequestType();
+        HttpHeaders headers = request.getHeaders();
+        ObjectNode response = apiRunService.run(url, requestType, headers);
+        JsonNode controlGroup = ComparatorJsonField.loadJsonFromFile(makeFilePath(name));
+        return apiCompareService.compare(response, controlGroup);
     }
+
 
 
 
@@ -59,17 +63,17 @@ public class ApiController {
         return "sample/" + path + ".json";
     }
 
-    private HttpHeaders convertHeaders(ObjectNode objectNode) {
-        Iterator<String> fieldNames = objectNode.fieldNames();
-        HttpHeaders headers = new HttpHeaders();
-//        headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        while (fieldNames.hasNext()) {
-            String fieldName = fieldNames.next();
-            headers.set(fieldName, String.valueOf(objectNode.get(fieldName)));
-        }
-        return headers;
-    }
+//    private HttpHeaders convertHeaders(HttpHeaders objectNode) {
+//        Iterator<String> fieldNames = objectNode.entrySet();
+//        HttpHeaders headers = new HttpHeaders();
+////        headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//
+//        while (fieldNames.hasNext()) {
+//            String fieldName = fieldNames.next();
+//            headers.set(fieldName, String.valueOf(objectNode.get(fieldName)));
+//        }
+//        return headers;
+//    }
 
 }

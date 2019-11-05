@@ -13,14 +13,17 @@ import java.util.Map;
 @Service
 public class ApiRunService {
 
+    private final RestTemplate restTemplate;
+
     @Autowired
-    RestTemplate restTemplate;
+    public ApiRunService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
 
     public ObjectNode run(String api, String requestType, HttpHeaders headers) throws Exception {
         ResponseEntity<ObjectNode> response;
-        if (requestType.equals("get")) {
-//            response = restTemplate.exchange(api, , ObjectNode.class, headers);
+        if (requestType.toLowerCase().equals("get")) {
             response = restTemplate.exchange(api, HttpMethod.GET, new HttpEntity<>(headers), ObjectNode.class);
         } else {
             throw new Exception();
