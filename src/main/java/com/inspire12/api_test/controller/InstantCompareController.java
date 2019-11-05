@@ -9,39 +9,43 @@ import com.inspire12.api_test.model.TestRequestFormat;
 import com.inspire12.api_test.service.ApiCompareService;
 import com.inspire12.api_test.service.ApiRunService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
-import java.util.Iterator;
-
 
 
 @RestController
-public class ApiController {
+public class InstantCompareController {
 
 
     @Autowired
     ApiCompareService apiCompareService;
-
+    @Autowired
+    ComparatorJsonField comparatorJsonField;
     @Autowired
     ApiRunService apiRunService;
 
-    @GetMapping("/instant/compare")
-    public boolean runInstantComapre(@RequestBody ComparatorRequest request) throws Exception {
-        String url = request.getUrl();
-        String name = request.getName();
-        String requestType = request.getRequestType();
-        HttpHeaders headers = request.getHeaders();
-        ObjectNode response = apiRunService.run(url, requestType, headers);
-        JsonNode controlGroup = ComparatorJsonField.loadJsonFromFile(makeFilePath(name));
-        return apiCompareService.compare(response, controlGroup);
+    @GetMapping("/instant-format/compare")
+    public boolean runInstantFormatCompare(@RequestBody ComparatorRequest useRequest) throws Exception {
+
+        ObjectNode response = apiRunService.run(useRequest);
+        JsonNode controlGroup =  apiRunService.runControlGroup(useRequest);;
+        return apiCompareService.compareFieldType(response, controlGroup);
     }
 
+
+    @GetMapping("/format/compare")
+    public boolean runFormatCompare(@RequestBody ComparatorRequest useRequest) throws Exception {
+        String name = useRequest.getName();
+        ObjectNode response = apiRunService.run(useRequest);
+        String filePath = makeFilePath(name);
+
+        JsonNode controlGroup = comparatorJsonField.loadJsonFromFile(filePath);
+        return apiCompareService.compareFieldType(response, controlGroup);
+    }
 
 
 

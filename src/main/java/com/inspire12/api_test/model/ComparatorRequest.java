@@ -15,4 +15,6 @@ public class ComparatorRequest {
     @JsonProperty("request_type")
     String requestType;
     HttpHeaders headers;
+    @JsonProperty("control_group_url")
+    String controlGroupUrl;
 }
